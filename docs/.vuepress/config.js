@@ -1,5 +1,6 @@
 module.exports = {
   title: 'DHAP',
+  base: '/DHAP-Documentation/',
   description: 'Decentralised Home Automation Protocol Documentation',
   themeConfig: {
     sidebar: [
