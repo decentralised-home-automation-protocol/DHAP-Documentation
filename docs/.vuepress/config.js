@@ -14,7 +14,8 @@ module.exports = {
         title: 'Reference',
         collapsable: false,
         children: [
-          '/reference/packet-types'
+          '/reference/packet-types',
+          '/reference/elements'
         ]
       }
     ]
