@@ -8,12 +8,18 @@ module.exports = {
   themeConfig: {
     sidebar: [
       {
+        title: 'Home',
+        collapsable: false,
+        children: [
+          '/home/',
+        ]
+      },
+      {
         title: 'Guide',
         collapsable: false,
         children: [
           '/guide/',
           '/guide/getting-started',
-          '/guide/installation'
         ]
       },
       {
