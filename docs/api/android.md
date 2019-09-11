@@ -4,11 +4,9 @@
 
 The DHAP class contains the public API for the DHAP library. To start using the library, create an instance of the DHAP class. The DHAP class requires an Android context object, which can be the Activity that the instance is being created in or the application context.
 
-``` java {5,12}
+``` java
 public class MainActivity extends AppCompatActivity {
     
-    private static final String TAG = MainActivity.class.getSimpleName();
-
     private DHAP dhap;
 
     @Override
@@ -28,10 +26,10 @@ public class MainActivity extends AppCompatActivity {
 To begin discovering compliant devices on the network, call the `discoverDevices` method on the DHAP instance. This method has several callbacks that make it easy to determine the outcome of the discovery. 
 
 ``` java {3,12,17}
-dhap.discoverDevices(new GetDiscoveredDevicesCallbacks() {
+dhap.discoverDevices(new DiscoveryCallbacks() {
     @Override
     public void foundDevices(List<Device> devices) {
-        Log.e(TAG, "Devices found.");
+        Log.d(TAG, "Devices found.");
         for (Device device : devices) {
             Log.d(TAG, "\tMAC: " + device.getMacAddress() + ", IP: " + device.getIpAddress());
             Log.d(TAG, "\tName: " + device.getName() + ", Room: " + device.getRoom());
@@ -40,38 +38,143 @@ dhap.discoverDevices(new GetDiscoveredDevicesCallbacks() {
 
     @Override
     public void noDevicesFound() {
-        Log.e(TAG, "No devices found.");
+        Log.d(TAG, "No devices found.");
     }
 
     @Override
     public void discoveryFailure() {
-        Log.e(TAG, "Discovery failed.");
+        Log.d(TAG, "Discovery failed.");
     }
 });
 ```
 
 **Line 3** shows the `foundDevices(List<Device> devices)` callback. This callback indicates that the discovery process successfully found one or more compliant devices on the network. The callback also provides you with a list of `Device` objects that represent each device that was discovered. These Device objects have several properties that the real device would have including the devices MAC address, IP address, assigned name and assigned room name.
 
-**Line 12** show the `noDevicesFound()` callback. This callback indicates that the discovery process completed but was unable to find any compliant devices.
+**Line 12** shows the `noDevicesFound()` callback. This callback indicates that the discovery process completed but was unable to find any compliant devices.
 
 **Line 17** shows the `discoveryFailure()` callback. This callback indicates that something went wrong in the library during the process of attempting to find devices.
 
+In addition to the normal discovery operation, the DHAP library also allows for debug devices to be discovered using the `discoverDebugDevices(DiscoveryCallbacks)` method. This method will search for xml files in the assests folder rather then over the network. A device object will be created for each xml file found.
+
+``` java
+dhap.discoverDebugDevices(new DiscoveryCallbacks() {
+    @Override
+    public void foundDevices(List<Device> devices) {
+        Log.d(TAG, "Debug Devices found.");
+        for (Device device : devices) {
+            Log.d(TAG, "\tMAC: " + device.getMacAddress() + ", IP: " + device.getIpAddress());
+            Log.d(TAG, "\tName: " + device.getName() + ", Room: " + device.getRoom());
+        }
+    }
+
+    @Override
+    public void noDevicesFound() {
+        Log.d(TAG, "No devices found.");
+    }
+
+    @Override
+    public void discoveryFailure() {
+        Log.d(TAG, "Discovery failed.");
+    }
+});
+```
+
 ## Joining
+
+### Join Device
+
+The Joining API contains methods that allow for you to proceed with the joining protocol at your own pace or to complete the entire protocol in one method.
+
+The `joinDevice(String networkSSID, String networkPassword, String deviceSSID, String devicePassword, JoiningCallbacks callback)` will perform all of the joining protocol for you. This will first verify the network SSID and password by connecting to that network. Then it will connect to the IoT devices AP and send the crededntials. This method will wait for a verification from the IoT device that it has successfully joined the network before calling the `joiningSuccess` callback.
+
+``` java {3,8,13}
+dhap.joinDevice(networkSSID, networkPassword, deviceSSID, devicePassword, new JoiningCallbacks() {
+    @Override
+    public void networkNotFound() {
+        Log.d(TAG, "networkNotFound");
+    }
+
+    @Override
+    public void joiningSuccess() {
+        Log.d(TAG, "successfully joined device" );
+     }
+
+    @Override
+    public void joiningFailure() {
+        Log.d(TAG, "joiningFailure");
+    }                
+});
+```
+**Line 3** shows the `networkNotFound()` callback This callback indicates that a network with that SSID could not be found. 
+
+**Line 8** shows the `joiningSuccess()` callback. This callback indicates that the device was successfully joined to the network.
+
+**Line 13** shows the `joiningFailure()` callback. This callback indicates that something went wrong in the library during the process of attempting to joining the device.
+
+### Connect To Access Point
+
+The `connectToAccessPoint(String SSID, String password, JoiningCallbacks callback)` method will conect to the designated AP and call the relevent callback methods. Note: this method will call the `joiningSuccess` callback once it has verified that a connection has been establised and IP packets can now be sent. This has a 20 second timeout and will return `joiningFailure` if a connection is not established before the end of the timeout.
+
+``` java {3,8,13}
+dhap.connectToAccessPoint(SSID, password, new JoiningCallbacks() {
+    @Override
+    public void networkNotFound() {
+        Log.d(TAG, "networkNotFound");
+    }
+
+    @Override
+    public void joiningSuccess() {
+        Log.d(TAG, "successfully connected to AP" );
+     }
+
+    @Override
+    public void joiningFailure() {
+        Log.d(TAG, "joiningFailure");
+    }                
+});
+```
+**Line 3** shows the `networkNotFound()` callback This callback indicates that a network with that SSID could not be found. 
+
+**Line 8** shows the `joiningSuccess()` callback. This callback indicates that the AP was successfully connected to.
+
+**Line 13** shows the `joiningFailure()` callback. This callback indicates that something went wrong in the library during the process of connecting to the AP.
 
 ### Send Credentials
 
-``` java 
-dhap.sendCredentials(new GetSendCredentialsCallbacks() {
+The `sendCredentials(String SSID, String password, JoiningCallbacks callback)` method will broadcast the credentials on its current network. This method should only be called after a connection to the IoT device has been established. Note: This method will only call the `joiningSuccess` callback once it has recieved an acknowledgement from the IoT device that credentials where recieved. This method will continuously broadcast the credentials once every second until an acknowledgement is recieved. If not acknowldegement is recieved within 20 seconds, `networkNotFound` will be called and the credential broadcasts will cease.
 
+``` java {3,8,13}
+dhap.sendCredentials(SSID, password, new JoiningCallbacks() {
+    @Override
+    public void networkNotFound() {
+        Log.d(TAG, "networkNotFound");
+    }
+
+    @Override
+    public void joiningSuccess() {
+        Log.d(TAG, "successfully sent credentials" );
+     }
+
+    @Override
+    public void joiningFailure() {
+        Log.d(TAG, "joiningFailure");
+    }                
 });
 ```
+**Line 3** shows the `networkNotFound()` callback This callback indicates that no response was recieved when sending the credentials. 
+
+**Line 8** shows the `joiningSuccess()` callback. This callback indicates that the credentials where sent successfully and an acknowledgement has been recieved from the device.
+
+**Line 13** shows the `joiningFailure()` callback. This callback indicates that something went wrong in the library during the process of attempting to send credentials.
 
 ## Display
 
 ### Fetch Device Interface
 
+To retrieve the user interface of a device, call the `fetchDeviceInterface(Device device, DisplayCallbacks callbacks)` method. This method takes a `device` instance in as a parameter and will retrieve the UI of that particular device. This method will return an intent to an activity which displays the user interface of that device.
+
 ``` java {3,5,9}
-dhap.fetchDeviceInterface(device, new GetDeviceInterfaceCallbacks() {
+dhap.fetchDeviceInterface(device, new DisplayCallbacks() {
     @Override
     public void deviceActivityIntent(Intent intent) {
         Log.d(TAG, "Fetched device interface.");
@@ -84,7 +187,58 @@ dhap.fetchDeviceInterface(device, new GetDeviceInterfaceCallbacks() {
     }
 });
 ```
+**Line 3** shows the `deviceActivityIntent()` callback. 
+
+**Line 5** shows the usage of the intent that has been returned. This activity is started by calling the `startActivity()` method.
+
+**Line 9** shows the `displayFailure()` callback. This callback indicates that something went wrong in the library during the process of fetching the devices xml.
 
 ## Status
 
+To request a status lease and recieve status updates, an instance of the `StatusUpdates` class must be created. This class will handle all funcitons relating to status updates and will therefore update relevent elements when a new status update is recieved.
 
+This class must be passed an instance of the `Device` class which represents the IoT device where the status updates will be broadcast from.
+
+``` java
+private Device device;
+private StatusUpdates statusUpdates;
+
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+
+    device = getIntent().getParcelableExtra("device");
+
+    statusUpdates = new StatusUpdates(device);
+
+    statusUpdates.requestStatusLease(10000, 1000, false);
+}
+```
+
+This class contains several public methods in its API.
+
+`sendLeaseRequest(float leaseLength, float updatePeriod, boolean responseRequired)` is the main method that will be needed. This will request a status lease form the IoT device and begin listening for status updates. This function contains three parameters. `leaselength` is the requested duration of the lease in milliseconds. `updatePeriod` refers to how often the status updates should be broadcast by the IoT device. `responseRequired` indicates if the IoT device should respond with the lease length and update period that has been granted. 
+
+ One would typically call this function in the `onCreate()` or `onResume()` method of an activity .
+
+``` java {6}
+private StatusUpdates statusUpdates;
+
+@Override
+protected void onResume() {
+    super.onResume();
+    statusUpdates.requestStatusLease(10000, 1000, false);
+}
+```
+
+Conversly, you can also call `leaveLease()` which will indicate to the IoT device that you are no longer interested in status updates. This will also cause the `statusUpdates` instance to stop listening for packets.
+
+``` java {6}
+private StatusUpdates statusUpdates;
+
+@Override
+protected void onStop() {
+    super.onStop();
+    statusUpdates.leaveLease();
+}
+```
