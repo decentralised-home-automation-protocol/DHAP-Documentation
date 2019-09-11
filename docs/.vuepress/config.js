@@ -11,7 +11,7 @@ module.exports = {
         title: 'Home',
         collapsable: false,
         children: [
-          '/home/',
+          '/',
         ]
       },
       {

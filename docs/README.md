@@ -1,3 +1,2 @@
-# DHAP Documentation
+# Introduction
 
-Decentralised Home Automation Protocol Documentation
