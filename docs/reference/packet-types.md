@@ -10,6 +10,14 @@ Each UDP packet is prefaced with a 3 digit code to determine its purpose.
 
 ### Send Credentials
 
+::: tip
+This is a BROADCAST packet
+:::
+
+::: danger
+This packet must be sent on a secure network
+:::
+
 Sent from `ICD`
 
 ICD sends home network credentials to device so that it can join the network.
@@ -62,6 +70,10 @@ Example: `130`
 ## Discovery
 
 ### Discovery Request
+
+::: tip
+This is a BROADCAST packet
+:::
 
 Sent from `ICD`
 
@@ -225,6 +237,10 @@ ICD informs the device that it is no longer interested in receiving status updat
 Example: `520`
 
 ### Status Update
+
+::: tip
+This is a BROADCAST packet
+:::
 
 Sent from `Device`
 
