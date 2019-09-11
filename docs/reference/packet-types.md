@@ -1,25 +1,33 @@
+---
+sidebarDepth: 2
+---
+
 # Packet Types
 
 Each UDP packet is prefaced with a 3 digit code to determine its purpose.
 
 ## Joining
 
-### Send Credentials `ICD`
+### Send Credentials
 
-ICD sends home network credentials to device so that it can join
+Sent from `ICD`
+
+ICD sends home network credentials to device so that it can join the network.
 
 ```
-100|SSID,Password
+100|ssid,password
 ```
 
-- **SSID**: the home network router ssid
-- **Password**: the home network router password
+- **ssid**: the network router ssid
+- **password**: the network router password
 
 Example: `100|Telstra7000,83627465`
 
-### Acknowledge Credentials `Device`
+### Acknowledge Credentials
 
-The device responds to the credentials with an acknowledge
+Sent from `Device`
+
+Device acknowledges that it has received the network credentials.
 
 ```
 110
@@ -27,9 +35,11 @@ The device responds to the credentials with an acknowledge
 
 Example: `110`
 
-### Joined Network Successfully `Device`
+### Joined Network Successfully
 
-The device informs the ICD that it has successfully joined the home network
+Sent from `Device`
+
+Device informs the ICD that it has successfully joined the network.
 
 ```
 120
@@ -37,9 +47,11 @@ The device informs the ICD that it has successfully joined the home network
 
 Example: `120`
 
-### Failed to Join Network `Device`
+### Failed to Join Network
 
-The device informs the ICD that it has failed connecting to the home network
+Sent from `Device`
+
+Device informs the ICD that it has failed connecting to the network.
 
 ```
 130
@@ -49,21 +61,40 @@ Example: `130`
 
 ## Discovery
 
-### Discovery Request `ICD`
+### Discovery Request
 
-The ICD requests that the device checks if its on the census list
+Sent from `ICD`
+
+ICD requests that the device checks if it is on the census list.
 
 ```
-300|censusList
+300|[device,device,device...]
 ```
 
-- **censusList**: the string representation of the currently discovered devices
+- **device**: the string representation of a currently discovered device
 
-Example: `300|mac,ip,statusbit,visibilitybit-mac,ip,statusbit,visibilitybit`
+Where each **device** string contains:
 
-### Discovery Response `Device`
+```
+mac,ip,statusbit,visibilitybit
+```
 
-If the device is not on the received censusList, it will respond with its information
+- **mac**: device MAC address
+- **ip**: device network IP address
+- **statusbit**:
+- **visibilitybit**:
+
+Example: `300|` (no currently discovered devices)
+
+Example: `300|B4:E6:2D:67:B5:3D,192.168.1.99,1,1`
+
+Example: `300|B4:E6:2D:67:B5:3D,192.168.1.99,1,1-D5:0A:95:9D:68:16,192.168.0.15,1,1`
+
+### Discovery Response
+
+Sent from `Device`
+
+Device will respond with its information if it is not on the received census list.
 
 ```
 310|mac,statusbit,visibilitybit
@@ -75,9 +106,11 @@ If the device is not on the received censusList, it will respond with its inform
 
 Example: `310|B4:E6:2D:67:B5:3D,1,1`
 
-### Discovery Header Request `ICD`
+### Discovery Header Request
 
-ICD requests the device to send its xml header information
+Sent from `ICD`
+
+ICD requests the device to send its xml header information.
 
 ```
 320
@@ -85,25 +118,29 @@ ICD requests the device to send its xml header information
 
 Example: `320`
 
-### Discovery Header Response `Device`
+### Discovery Header Response
 
-Device responds to a discovery header request with the devices xml header
+Sent from `Device`
+
+Device responds to a discovery header request with the devices xml header.
 
 ```
-330|mac,name,room
+330|mac,name,location
 ```
 
 - **mac**: device MAC address
 - **name**: the name given to the device
-- **room**: the room string given to the device
+- **location**: the location given to the device
 
 Example: `310|B4:E6:2D:67:B5:3D,TV,Living Room`
 
 ## User Interface
 
-### UI Request `ICD`
+### UI Request
 
-ICD requests the device to send its full xml description
+Sent from `ICD`
+
+ICD requests the device to send its full xml description.
 
 ```
 200
@@ -111,9 +148,11 @@ ICD requests the device to send its full xml description
 
 Example: `200`
 
-### UI Response `Device`
+### UI Response
 
-Device responds to a ui request with its xml string
+Sent from `Device`
+
+Device responds to a ui request with its xml string.
 
 ```
 210|xml
@@ -121,13 +160,15 @@ Device responds to a ui request with its xml string
 
 - **xml**: the devices xml string
 
-Example: `210|<?xml version="1.0" encoding="UTF-8"?> ...`
+Example: `210|<?xml version="1.0" encoding="UTF-8"?><device><name> ...`
 
 ## Command
 
-### Command Request `ICD`
+### Command Request
 
-ICD sends a command to request the device to update its state
+Sent from `ICD`
+
+ICD sends a command to request the device to update its state.
 
 ```
 400|command
@@ -139,9 +180,11 @@ Example: `400|`
 
 ## Status
 
-### Lease Request `ICD`
+### Lease Request
 
-ICD requests a status lease from the device
+Sent from `ICD`
+
+ICD requests a status lease from the device.
 
 ```
 500|duration,interval,response
@@ -153,9 +196,11 @@ ICD requests a status lease from the device
 
 Example: `500|10000,2000,T`
 
-### Lease Response `Device`
+### Lease Response
 
-Device responds to a lease request if the ICD requested lease information
+Sent from `Device`
+
+Device responds to a lease request if the ICD requested lease information.
 
 ```
 510|mac,duration,interval
@@ -167,9 +212,11 @@ Device responds to a lease request if the ICD requested lease information
 
 Example: `510|B4:E6:2D:67:B5:3D,50000,1000`
 
-### Leave Lease `ICD`
+### Leave Lease
 
-ICD informs the device that it is no longer interested in receiving status updates
+Sent from `ICD`
+
+ICD informs the device that it is no longer interested in receiving status updates.
 
 ```
 520
@@ -177,9 +224,11 @@ ICD informs the device that it is no longer interested in receiving status updat
 
 Example: `520`
 
-### Status Update `Device`
+### Status Update
 
-Device broadcasts its current state to all devices
+Sent from `Device`
+
+Device broadcasts its current state to all devices.
 
 ```
 530|mac,lastUpdate,status[,status,status...]
@@ -188,6 +237,8 @@ Device broadcasts its current state to all devices
 - **mac**: devices MAC address
 - **lastUpdate**: whether this is the last status update in the current lease
 - **status**: contains state for one element
+
+Where each status string contains:
 
 ```
 groupId-elementId=value
