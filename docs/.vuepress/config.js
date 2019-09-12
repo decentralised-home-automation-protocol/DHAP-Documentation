@@ -36,7 +36,8 @@ module.exports = {
         collapsable: false,
         children: [
           '/reference/packet-types',
-          '/reference/elements'
+          '/reference/elements',
+          '/reference/device-examples'
         ]
       }
     ]

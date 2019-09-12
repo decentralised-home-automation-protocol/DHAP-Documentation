@@ -1,0 +1,55 @@
+# Device Examples
+
+## Kettle
+
+``` xml
+<?xml version="1.0" encoding="UTF-8"?>
+<device>
+    <name>Kettle</name>
+    <location>Kitchen</location>
+
+    <group id="1">
+        <gui_element id="1">
+            <type>switchtoggle</type>
+            <disp_settings>On/Off</disp_settings>
+            <status_location>1</status_location>
+            <comment>Power</comment>
+        </gui_element>
+    </group>
+
+    <group id="2">
+        <gui_element id="1">
+            <type>buttongroup</type>
+            <disp_settings>Boil</disp_settings>
+            <comment>Start Boil</comment>
+        </gui_element>
+    </group>
+
+    <group id="3">
+        <gui_element id="1">
+            <type>switchtoggle</type>
+            <disp_settings>Keep Warm</disp_settings>
+            <status_location>2</status_location>
+            <comment>Keep warm</comment>
+        </gui_element>
+    </group>
+
+    <group id="4">
+        <gui_element id="1">
+            <type>rangeinput</type>
+            <disp_settings>Target Temperature,Set,10,150</disp_settings>
+            <status_location>3</status_location>
+            <comment>Set the target temperature</comment>
+        </gui_element>
+    </group>
+
+    <group id="5">
+        <gui_element id="1">
+            <type>selection</type>
+            <disp_settings>Temp Settings,Coffee,Hot Chocolate,Water</disp_settings>
+            <status_location>4</status_location>
+            <comment>Set temp settings</comment>
+        </gui_element>
+    </group>
+</device>
+```
