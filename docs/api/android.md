@@ -4,7 +4,7 @@
 
 The DHAP class contains the public API for the DHAP library. To start using the library, create an instance of the DHAP class. The DHAP class requires an Android context object, which can be the Activity that the instance is being created in or the application context.
 
-``` java
+``` java {3,10}
 public class MainActivity extends AppCompatActivity {
     
     private DHAP dhap;
@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
 To begin discovering compliant devices on the network, call the `discoverDevices` method on the DHAP instance. This method has several callbacks that make it easy to determine the outcome of the discovery. 
 
 ``` java {3,12,17}
-dhap.discoverDevices(new DiscoveryCallbacks() {
+dhap.discoverDevices(new DiscoverDevicesCallbacks() {
     @Override
     public void foundDevices(List<Device> devices) {
         Log.d(TAG, "Devices found.");
@@ -48,16 +48,16 @@ dhap.discoverDevices(new DiscoveryCallbacks() {
 });
 ```
 
-**Line 3** shows the `foundDevices(List<Device> devices)` callback. This callback indicates that the discovery process successfully found one or more compliant devices on the network. The callback also provides you with a list of `Device` objects that represent each device that was discovered. These Device objects have several properties that the real device would have including the devices MAC address, IP address, assigned name and assigned room name.
+**Line 3** shows the `foundDevices(List<Device> devices)` callback. This callback indicates that the discovery process successfully found one or more compliant devices on the network. The callback also provides you with a list of `Device` objects that represent each device that was discovered. These Device objects have several properties that the real device would have including the devices MAC address, IP address, assigned name and location.
 
 **Line 12** shows the `noDevicesFound()` callback. This callback indicates that the discovery process completed but was unable to find any compliant devices.
 
 **Line 17** shows the `discoveryFailure()` callback. This callback indicates that something went wrong in the library during the process of attempting to find devices.
 
-In addition to the normal discovery operation, the DHAP library also allows for debug devices to be discovered using the `discoverDebugDevices(DiscoveryCallbacks)` method. This method will search for xml files in the assests folder rather then over the network. A device object will be created for each xml file found.
+In addition to the normal discovery operation, the DHAP library also allows for debug devices to be discovered using the `discoverDebugDevices(DiscoverDevicesCallbacks)` method. This method will search for xml files in the assests folder rather then over the network. A device object will be created for each xml file found.
 
-``` java
-dhap.discoverDebugDevices(new DiscoveryCallbacks() {
+``` java {1}
+dhap.discoverDebugDevices(new DiscoverDevicesCallbacks() {
     @Override
     public void foundDevices(List<Device> devices) {
         Log.d(TAG, "Debug Devices found.");
@@ -85,96 +85,119 @@ dhap.discoverDebugDevices(new DiscoveryCallbacks() {
 
 The Joining API contains methods that allow for you to proceed with the joining protocol at your own pace or to complete the entire protocol in one method.
 
-The `joinDevice(String networkSSID, String networkPassword, String deviceSSID, String devicePassword, JoiningCallbacks callback)` will perform all of the joining protocol for you. This will first verify the network SSID and password by connecting to that network. Then it will connect to the IoT devices AP and send the crededntials. This method will wait for a verification from the IoT device that it has successfully joined the network before calling the `joiningSuccess` callback.
+The `joinDevice(String networkSSID, String networkPassword, String deviceSSID, String devicePassword, JoinDeviceCallbacks callback)` will perform all of the joining protocol for you. This will first verify the network SSID and password by connecting to that network. Then it will connect to the IoT devices AP and send the crededntials. This method will wait for a verification from the IoT device that it has successfully joined the network before calling the `success` callback.
 
-``` java {3,8,13}
-dhap.joinDevice(networkSSID, networkPassword, deviceSSID, devicePassword, new JoiningCallbacks() {
+``` java {3,8,13,18,24}
+dhap.joinDevice(networkSSID, networkPassword, deviceSSID, devicePassword, new JoinDeviceCallbacks() {
     @Override
-    public void networkNotFound() {
-        Log.d(TAG, "networkNotFound");
+    public void networkNotFound(String SSID) {
+        Log.e(TAG, "Network not found: " + SSID);
     }
 
     @Override
-    public void joiningSuccess() {
-        Log.d(TAG, "successfully joined device" );
-     }
+    public void credentialsAcknowledged() {
+        Log.e(TAG, "Credentials Acknowledged");
+    }
 
     @Override
-    public void joiningFailure() {
-        Log.d(TAG, "joiningFailure");
-    }                
+    public void sendCredentialsTimeout() {
+        Log.e(TAG, "Sending of credentials timed out");
+    }
+
+    @Override
+    public void success() {
+        actionFragment.setActionEnabled(true);
+        Log.d(TAG, "successfully joined device");
+    }
+
+    @Override
+    public void failure(String message) {
+        actionFragment.setActionEnabled(true);
+        Log.e(TAG, "failure: " + message);
+    }               
 });
 ```
-**Line 3** shows the `networkNotFound()` callback This callback indicates that a network with that SSID could not be found. 
+**Line 3** shows the `networkNotFound(String SSID)` callback This callback indicates that a network with the SSID could not be found. 
 
-**Line 8** shows the `joiningSuccess()` callback. This callback indicates that the device was successfully joined to the network.
+**Line 8** shows the `credentialsAcknowledged()` callback. This callback indicates that the device has responded that the credentials have been received.
 
-**Line 13** shows the `joiningFailure()` callback. This callback indicates that something went wrong in the library during the process of attempting to joining the device.
+**Line 13** shows the `sendCredentialsTimeout()` callback. This callback indicates that an acknowledgement was not recived from the device. This most likely due to the device not reciving the credentials.
+
+**Line 18** shows the `success()` callback. This callback indicates that the device has successfully joined the network.
+
+**Line 24** shows the `failure(String message)` callback. This callback indicates that something went wrong in the library during the process of attempting to joining the device or the device could not join the network.
 
 ### Connect To Access Point
 
-The `connectToAccessPoint(String SSID, String password, JoiningCallbacks callback)` method will conect to the designated AP and call the relevent callback methods. Note: this method will call the `joiningSuccess` callback once it has verified that a connection has been establised and IP packets can now be sent. This has a 20 second timeout and will return `joiningFailure` if a connection is not established before the end of the timeout.
+The `connectToAccessPoint(String SSID, String password, ConnectToApCallbacks callback)` method will conect to the designated AP and call the relevent callback methods. Note: this method will call the `success` callback once it has verified that a connection has been establised and IP packets can now be sent. This has a 30 second timeout and will return `failure` if a connection is not established before the end of the timeout.
 
 ``` java {3,8,13}
-dhap.connectToAccessPoint(SSID, password, new JoiningCallbacks() {
+dhap.connectToAccessPoint(SSID, password, new ConnectToApCallbacks() {
     @Override
-    public void networkNotFound() {
-        Log.d(TAG, "networkNotFound");
+    public void networkNotFound(String SSID) {
+        Log.e(TAG, "Network not found: " + SSID);
     }
 
     @Override
-    public void joiningSuccess() {
-        Log.d(TAG, "successfully connected to AP" );
+    public void success() {
+        Log.d(TAG, "Successfully connected to AP" );
      }
 
     @Override
-    public void joiningFailure() {
-        Log.d(TAG, "joiningFailure");
+    public void failure() {
+        Log.d(TAG, "Failed to connect to AP");
     }                
 });
 ```
 **Line 3** shows the `networkNotFound()` callback This callback indicates that a network with that SSID could not be found. 
 
-**Line 8** shows the `joiningSuccess()` callback. This callback indicates that the AP was successfully connected to.
+**Line 8** shows the `success()` callback. This callback indicates that the access point was successfully connected to.
 
-**Line 13** shows the `joiningFailure()` callback. This callback indicates that something went wrong in the library during the process of connecting to the AP.
+**Line 13** shows the `failure()` callback. This callback indicates that something went wrong in the library during the process of connecting to the access point.
 
 ### Send Credentials
 
-The `sendCredentials(String SSID, String password, JoiningCallbacks callback)` method will broadcast the credentials on its current network. This method should only be called after a connection to the IoT device has been established. Note: This method will only call the `joiningSuccess` callback once it has recieved an acknowledgement from the IoT device that credentials where recieved. This method will continuously broadcast the credentials once every second until an acknowledgement is recieved. If not acknowldegement is recieved within 20 seconds, `networkNotFound` will be called and the credential broadcasts will cease.
+The `sendCredentials(String SSID, String password, SendCredentialsCallbacks callback)` method will broadcast the credentials on its current network. This method should only be called after a connection to the IoT device has been established. Note: This method will only call the `success` callback once it has recieved an acknowledgement from the IoT device that credentials where recieved. This method will continuously broadcast the credentials once every second until an acknowledgement is recieved. If not acknowldegement is recieved within 20 seconds, `sendCredentialsTimeout` will be called and the credential broadcasts will cease.
 
-``` java {3,8,13}
-dhap.sendCredentials(SSID, password, new JoiningCallbacks() {
+``` java {3,8,13,18}
+dhap.sendCredentials(SSID, password, new SendCredentialsCallbacks() {
     @Override
-    public void networkNotFound() {
+    public void credentialsAcknowledged() {
         Log.d(TAG, "networkNotFound");
     }
 
     @Override
-    public void joiningSuccess() {
+    public void sendCredentialsTimeout() {
         Log.d(TAG, "successfully sent credentials" );
      }
 
     @Override
-    public void joiningFailure() {
-        Log.d(TAG, "joiningFailure");
-    }                
+    public void success() {
+        Log.d(TAG, "Successfully connected to AP" );
+     }
+
+    @Override
+    public void failure() {
+        Log.d(TAG, "Failed to connect to AP");
+    }              
 });
 ```
-**Line 3** shows the `networkNotFound()` callback This callback indicates that no response was recieved when sending the credentials. 
+**Line 3** shows the `credentialsAcknowledged()` callback. This callback indicates that the credentials where sent successfully and an acknowledgement has been recieved from the device.
 
-**Line 8** shows the `joiningSuccess()` callback. This callback indicates that the credentials where sent successfully and an acknowledgement has been recieved from the device.
+**Line 8** shows the `sendCredentialsTimeout()` callback. This callback indicates that no response was recieved when sending the credentials. 
 
-**Line 13** shows the `joiningFailure()` callback. This callback indicates that something went wrong in the library during the process of attempting to send credentials.
+**Line 13** shows the `success()` callback. This callback indicates that the device has successfully joined the network.
+
+**Line 18** shows the `failure()` callback. This callback indicates that something went wrong in the library during the process of attempting to send credentials.
 
 ## Display
 
 ### Fetch Device Interface
 
-To retrieve the user interface of a device, call the `fetchDeviceInterface(Device device, DisplayCallbacks callbacks)` method. This method takes a `device` instance in as a parameter and will retrieve the UI of that particular device. This method will return an intent to an activity which displays the user interface of that device.
+To retrieve the user interface of a device, call the `fetchDeviceInterface(Device device, FetchDeviceInterfaceCallbacks callbacks)` method. This method takes a `device` instance in as a parameter and will retrieve the UI of that particular device. This method will return an intent to an activity which displays the user interface of that device.
 
-``` java {3,5,9}
-dhap.fetchDeviceInterface(device, new DisplayCallbacks() {
+``` java {3,5,9,14}
+dhap.fetchDeviceInterface(device, new FetchDeviceInterfaceCallbacks() {
     @Override
     public void deviceActivityIntent(Intent intent) {
         Log.d(TAG, "Fetched device interface.");
@@ -182,8 +205,13 @@ dhap.fetchDeviceInterface(device, new DisplayCallbacks() {
     }
 
     @Override
-    public void displayFailure() {
-        Log.d(TAG, "Display failed.");
+    public void invalidDisplayXmlFailure() {
+        Log.d(TAG, "invalidDisplayXmlFailure");
+    }
+
+    @Override
+    public void displayTimeoutFailure() {
+        Log.d(TAG, "displayTimeoutFailure");
     }
 });
 ```
@@ -191,7 +219,9 @@ dhap.fetchDeviceInterface(device, new DisplayCallbacks() {
 
 **Line 5** shows the usage of the intent that has been returned. This activity is started by calling the `startActivity()` method.
 
-**Line 9** shows the `displayFailure()` callback. This callback indicates that something went wrong in the library during the process of fetching the devices xml.
+**Line 9** shows the `invalidDisplayXmlFailure()` callback. This callback indicates that the xml send from the device is invalid.
+
+**Line 14** shows the `displayTimeoutFailure()` callback. This callback indicates that the devices xml was not received before the timout ended.
 
 ## Status
 
@@ -199,7 +229,7 @@ To request a status lease and recieve status updates, an instance of the `Status
 
 This class must be passed an instance of the `Device` class which represents the IoT device where the status updates will be broadcast from.
 
-``` java
+``` java {2,10}
 private Device device;
 private StatusUpdates statusUpdates;
 
