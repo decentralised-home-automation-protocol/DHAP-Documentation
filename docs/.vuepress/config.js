@@ -11,7 +11,7 @@ module.exports = {
         title: 'Home',
         collapsable: false,
         children: [
-          '/home/',
+          '/',
         ]
       },
       {
@@ -36,7 +36,8 @@ module.exports = {
         collapsable: false,
         children: [
           '/reference/packet-types',
-          '/reference/elements'
+          '/reference/elements',
+          '/reference/device-examples'
         ]
       }
     ]
