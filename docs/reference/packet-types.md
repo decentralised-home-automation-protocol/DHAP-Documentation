@@ -188,7 +188,36 @@ ICD sends a command to request the device to update its state.
 
 - **command**:
 
-Example: `400|`
+The command value should be in the following format `groupID-elementID=elementStatus`.
+
+`groupID` is the value of the `group` ID which the element is a part of.
+
+`elementID` is the value of the `gui_element` ID.
+
+`elementStatus` is the string which represents that specific elements status. To see the syntax of the status of a particular element, see that elements section of the [elements documentation](/reference/elements.html).
+
+the `-` and `=` characters are used as delimiters.
+
+```xml
+<group id="2" permisison="WR">
+    <gui_element id="1">
+        <type>stepper</type>
+        <disp_settings>Number,0,10</disp_settings>
+        <status_location>3</status_location>
+        <comment>Number Counter</comment>
+    </gui_element>
+    <gui_element id="2">
+        <type>buttontoggle</type>
+        <disp_settings>Open/Close,Open,Close</disp_settings>
+        <status_location>2</status_location>
+        <comment>Light Switch</comment>
+    </gui_element>
+</group>
+```
+
+If the `buttontoggle` element was currently in the `True` state and the button was pressed. Its command would be: `400|2-2=False`.
+
+If the `stepper` element currently had a value of `5` and it was incremented, its command would be `400|2-1=6`.
 
 ## Status
 
