@@ -19,7 +19,10 @@ module.exports = {
         collapsable: false,
         children: [
           '/guide/',
-          '/guide/getting-started',
+          '/guide/android',
+          '/guide/ios',
+          '/guide/electron',
+          '/guide/esp8266'
         ]
       },
       {
