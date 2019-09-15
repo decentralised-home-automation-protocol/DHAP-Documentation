@@ -188,7 +188,36 @@ ICD sends a command to request the device to update its state.
 
 - **command**:
 
-Example: `400|`
+The command value should be in the following format `groupID-elementID=elementStatus`.
+
+`groupID` is the value of the `group` ID which the element is a part of.
+
+`elementID` is the value of the `gui_element` ID.
+
+`elementStatus` is the string which represents that specific elements status. To see the syntax of the status of a particular element, see that elements section of the [elements documentation](/reference/elements.html).
+
+the `-` and `=` characters are used as delimiters.
+
+```xml
+<group id="2" permisison="WR">
+    <gui_element id="1">
+        <type>stepper</type>
+        <disp_settings>Number,0,10</disp_settings>
+        <status_location>3</status_location>
+        <comment>Number Counter</comment>
+    </gui_element>
+    <gui_element id="2">
+        <type>buttontoggle</type>
+        <disp_settings>Open/Close,Open,Close</disp_settings>
+        <status_location>2</status_location>
+        <comment>Light Switch</comment>
+    </gui_element>
+</group>
+```
+
+If the `buttontoggle` element was currently in the `True` state and the button was pressed. Its command would be: `400|2-2=False`.
+
+If the `stepper` element currently had a value of `5` and it was incremented, its command would be `400|2-1=6`.
 
 ## Status
 
@@ -251,17 +280,40 @@ Device broadcasts its current state to all devices.
 ```
 
 - **mac**: devices MAC address
-- **lastUpdate**: whether this is the last status update in the current lease
+- **lastUpdate**: whether this is the final status update in the current lease. This value is either `T` or `F` where `T` indicates it is the final packet.
 - **status**: contains state for one element
 
-Where each status string contains:
+Each element must be updated in a status update. The index of the `status` value in the list, will corrospond to the value found in the `status_location` tag in an elements xml. This index starts at the value 1. Therefore, the first `status` value in the list will be assigned to the element that contains the xml `<status_location>1</status_location>`
 
+For the following xml:
+
+```xml
+<group id="1" permisison="WR">
+    <gui_element id="1">
+        <type>progress</type>
+        <disp_settings>Loading...</disp_settings>
+        <status_location>1</status_location>
+        <comment>Loading progression</comment>
+    </gui_element>
+</group>
+<group id="2" permisison="WR">
+    <gui_element id="1">
+        <type>stepper</type>
+        <disp_settings>Number,0,10</disp_settings>
+        <status_location>3</status_location>
+        <comment>Number Counter</comment>
+    </gui_element>
+    <gui_element id="2">
+        <type>buttontoggle</type>
+        <disp_settings>Open/Close,Open,Close</disp_settings>
+        <status_location>2</status_location>
+        <comment>Light Switch</comment>
+    </gui_element>
+</group>
 ```
-groupId-elementId=value
-```
 
-- **groupId**: the id of the group the element is contained in
-- **elementId**: the id of the element to update
-- **value**: the updated value for the element
+An example status update packet for this device layout could look like the following:
 
-Example: `530|B4:E6:2D:67:B5:3D,F,2-1=7`
+`530|B4:E6:2D:67:B5:3D,F,13,True,4`
+
+In this update packet, the progress bar is at `13%`, the stepper has a value of `4` and the buttontoggle is in a `True` state. Note, the elements do not need to be listed in order of status update index in the xml.

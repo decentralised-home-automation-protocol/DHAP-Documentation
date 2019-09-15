@@ -261,7 +261,7 @@ protected void onResume() {
 }
 ```
 
-Conversly, you can also call `leaveLease()` which will indicate to the IoT device that you are no longer interested in status updates. This will also cause the `statusUpdates` instance to stop listening for packets.
+Conversly, you can also call `leaveLease()` which will indicate to the IoT device that you are no longer interested in status updates.
 
 ``` java {6}
 private StatusUpdates statusUpdates;
