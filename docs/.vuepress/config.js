@@ -21,7 +21,7 @@ module.exports = {
           '/guide/',
           '/guide/android',
           '/guide/ios',
-          '/guide/electron',
+          '/guide/desktop',
           '/guide/esp8266'
         ]
       },
