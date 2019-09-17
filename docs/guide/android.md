@@ -2,7 +2,7 @@
 
 This guide will take you through the process of developing a basic Android application using our library. A completed example application can be found in the [Android Repo](https://github.com/decentralised-home-automation-protocol/DHAP-Android) which has the ability to Join, Discover and Control compliant IoT devices.
 
-## Library installation
+## Installation
 
 While quick and basic installation instruction can be found [here](https://decentralised-home-automation-protocol.github.io/DHAP-Documentation/guide/#android), this section will explain the installation of the library in much more detail and is recommended for those who are new to Android development.
 
@@ -123,7 +123,7 @@ You'll be prompted again to Sync your project. Don't forget to do this!
 
 Now your all set and ready to develop your app with the DHAP library.
 
-## Library Usage
+## Usage
 
 To use the DHAP library, you must first create an instance DHAP object to be used to interact with the library. This can be easily done in the `onCreate` method in `MainActivity` of our simple application as shown below.
 
