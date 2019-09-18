@@ -27,7 +27,7 @@ allprojects {
 ``` gradle {3}
 dependencies {
   ...
-  implementation 'com.github.decentralised-home-automation-protocol:dhap:0.1.0'
+  implementation 'com.github.decentralised-home-automation-protocol:DHAP-Android:0.1.0'
 }
 ```
 

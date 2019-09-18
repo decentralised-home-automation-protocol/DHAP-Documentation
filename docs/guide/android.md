@@ -61,7 +61,7 @@ First we want to add the libraries dependency by adding line 3 below.
 ``` gradle {3}
 dependencies {
   ...
-  implementation 'com.github.decentralised-home-automation-protocol:dhap:0.1.0'
+  implementation 'com.github.decentralised-home-automation-protocol:DHAP-Android:0.1.0'
 }
 ```
 
@@ -112,7 +112,7 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
-    implementation 'com.github.decentralised-home-automation-protocol:dhap:0.1.0'
+    implementation 'com.github.decentralised-home-automation-protocol:DHAP-Android:0.1.0'
 }
 ```
 </details>
