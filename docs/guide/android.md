@@ -263,13 +263,31 @@ protected void onCreate(Bundle savedInstanceState) {
 }
 ```
 
-Status updates can be manually requested by instantiating an instance of the `StatusUpdates` class. This class requires a reference to the `Device` object it will be receiving status updates and requesting leases from. to request a new lease call the `requestStatusLease` function. This function will need to be passed three values, the leaseLength and update period in ms as well as a boolean to determine if a lease response is required.
+Status updates can be manually requested by through the use of the `Device` class. to request a new lease call the `requestStatusLease` function. This function will need to be passed four parameters, the leaseLength and update period in ms as well as a boolean to determine if a lease response is required as well as the callbacks. The function uses the `StatusLeaseCallbacks` which has two methods that must be implemented. `leaseResponse` will be called when the response from the IoT device is received after a request is sent. `shouldRenewStatusLease` is a function that will be used to determine if a lease should be renewed when it expired. This function simply returns a true or false value.
 
 ```Java
-statusUpdates.requestStatusLease(10000, 1000, false);
+float leaseLength = 1000;
+float updatePeriod = 100;
+
+device.requestStatusLease(leaseLength, updatePeriod, false,
+                    new StatusLeaseCallbacks() {
+    @Override
+    public void leaseResponse(float leaseLength, float updatePeriod) {
+        Log.d("status", "length: " + leaseLength + " period: " + updatePeriod);
+    }
+
+    @Override
+    public boolean shouldRenewStatusLease() {
+        return true;
+    }
+});
 ```
 
-To leave a lease, simply call the `leaveLease` function. The `StatusUpdates` class will continue to renew expired leases continuously until the `leaveLease` function is called.
+To leave a lease, simply call the `leaveLease` function. 
+
+```Java
+device.leaveLease();
+```
 
 It is important to note that a custom activity will need to implement the `OnElementCommandListener` interface to receive messages when the user interacts with the elements on screen. This data should then be passed to the `sendIoTCommand` function of the `DHAP` class to send this action on to the IoT device.
 
