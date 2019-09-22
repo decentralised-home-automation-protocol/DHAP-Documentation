@@ -10,20 +10,36 @@ Ensure you have the latest version of [yarn](https://yarnpkg.com/lang/en/) or [n
 
 In the root directory of the repo you just cloned, run the following commands in a terminal.
 
+You must first install the dependencies with
 ``` bash
-# install dependencies
-yarn # or npm install
+# yarn
+yarn 
 
-# serve with hot reload at localhost:9080
-yarn run dev # or npm run dev
+# npm
+npm install
 ```
 
-To build the project use
-
+To run the project in a development environment use
 ```bash
-# build electron application for production
-yarn run build # or npm run build
+# yarn
+yarn run dev
+
+# npm
+npm run dev
 ```
+
+Or alternatively you can build the project with.
+```bash
+# yarn
+yarn run build
+
+# npm
+npm run build
+```
+The project will be built into a folder called `build` in the same directory.
+
+A note for Windows users: This project was created using electron-vue which may require additional build tools to be installed to build the project. If you run into issues building the project, please refer to the [electron-vue](https://simulatedgreg.gitbooks.io/electron-vue/content/en/getting_started.html#a-note-for-windows-users) documentation.
+
 
 ## Usage
 
