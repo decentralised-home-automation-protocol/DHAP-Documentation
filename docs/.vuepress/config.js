@@ -40,6 +40,7 @@ module.exports = {
         children: [
           '/reference/packet-types',
           '/reference/elements',
+          '/reference/xml-schema',
           '/reference/device-examples'
         ]
       }
