@@ -1,4 +1,4 @@
-# Installation
+# Quick Library Installation
 
 ## Android
 

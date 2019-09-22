@@ -1,8 +1,8 @@
-# Android Guide
+# Android Library
 
-This guide will take you through the process of developing a basic Android application using our library. A completed example application can be found in the [Android Repo](https://github.com/decentralised-home-automation-protocol/DHAP-Android) which has the ability to Join, Discover and Control compliant IoT devices.
+This guide will take you through the process of developing a basic Android application using our library. A completed example application can be found in the [Android Repo](https://github.com/decentralised-home-automation-protocol/DHAP-Android) which has the ability to Join, Discover and Control compliant IoT devices. Simply clone the android repo and open it in Android Studio. From here you can compile and run the example application on your Android device.
 
-## Installation
+## Library Installation
 
 While quick and basic installation instruction can be found [here](https://decentralised-home-automation-protocol.github.io/DHAP-Documentation/guide/#android), this section will explain the installation of the library in much more detail and is recommended for those who are new to Android development.
 
