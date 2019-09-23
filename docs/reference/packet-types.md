@@ -88,19 +88,20 @@ ICD requests that the device checks if it is on the census list.
 Where each **device** string contains:
 
 ```
-mac,ip,statusbit,visibilitybit
+mac,ip,statusbit,visibilitybit,headerVersion
 ```
 
-- **mac**: device MAC address
-- **ip**: device network IP address
-- **statusbit**:
-- **visibilitybit**:
+- **mac**: device MAC address.
+- **ip**: device network IP address.
+- **statusbit**: whether the device is currently active or not. 1 or 0.
+- **visibilitybit**: Specifies the visibility permission level.
+- **headerVersion**: The current version of the device header.
 
 Example: `300|` (no currently discovered devices)
 
-Example: `300|B4:E6:2D:67:B5:3D,192.168.1.99,1,1`
+Example: `300|B4:E6:2D:67:B5:3D,192.168.1.99,1,1,5`
 
-Example: `300|B4:E6:2D:67:B5:3D,192.168.1.99,1,1-D5:0A:95:9D:68:16,192.168.0.15,1,1`
+Example: `300|B4:E6:2D:67:B5:3D,192.168.1.99,1,1,5-D5:0A:95:9D:68:16,192.168.0.15,1,1,9`
 
 ### Discovery Response
 
@@ -109,14 +110,15 @@ Sent from `Device`
 Device will respond with its information if it is not on the received census list.
 
 ```
-310|mac,statusbit,visibilitybit
+310|mac,statusbit,visibilitybit,headerVersion
 ```
 
-- **mac**: device MAC address
-- **statusbit**: 
-- **visibilitybit**: 
+- **mac**: device MAC address.
+- **statusbit**: whether the device is currently active or not.  1 or 0.
+- **visibilitybit**: Specifies the visibility permission level.
+- **headerVersion**: The current version of the device header.
 
-Example: `310|B4:E6:2D:67:B5:3D,1,1`
+Example: `310|B4:E6:2D:67:B5:3D,1,1,5`
 
 ### Discovery Header Request
 
