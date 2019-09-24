@@ -184,8 +184,10 @@ String homeSSID = "homeSSID";
 String homePassword = "homePassword";
 String deviceSSID = "deviceSSID";
 String devicePassword = "devicePassword";
+String deviceName = "deviceName";
+String deviceLocation = "deviceLocation";
 
-dhap.joinDevice(homeSSID, homePassword, deviceSSID, devicePassword, new JoinDeviceCallbacks() {
+dhap.joinDevice(homeSSID, homePassword, deviceSSID, devicePassword, deviceName, deviceLocation, new JoinDeviceCallbacks() {
     @Override
     public void networkNotFound(String SSID) {
       Log.d("Joining", "Network with SSID: " + SSID + " not found!");
@@ -297,8 +299,6 @@ It is important to note that a custom activity will need to implement the `OnEle
 ```Java
 public class DeviceActivity extends AppCompatActivity implements OnElementCommandListener {
     private Device device;
-    private StatusUpdates statusUpdates;
-    private DHAP dhap;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -307,10 +307,9 @@ public class DeviceActivity extends AppCompatActivity implements OnElementComman
 
         ScrollView scrollView = new ScrollView(this);
         ViewGroup viewGroup = device.getDeviceViewGroup(getSupportFragmentManager(), this);
-        scrollView.addView(viewGroup);
-
-        statusUpdates = new StatusUpdates(device);
-        dhap = new DHAP(this);
+        if (viewGroup != null) {
+            scrollView.addView(viewGroup);
+        }
 
         setContentView(scrollView);
     }
@@ -323,13 +322,23 @@ public class DeviceActivity extends AppCompatActivity implements OnElementComman
     @Override
     protected void onResume() {
         super.onResume();
-        statusUpdates.requestStatusLease(10000, 1000, false);
+        device.requestStatusLease(10000, 1000, false, new StatusLeaseCallbacks() {
+            @Override
+            public void leaseResponse(float leaseLength, float updatePeriod) {
+                Log.d("DeviceActivity", "leaseResponse: " + leaseLength + " UpdatePeriod: " + updatePeriod);
+            }
+
+            @Override
+            public boolean shouldRenewStatusLease() {
+                return true;
+            }
+        });
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        statusUpdates.leaveLease();
+        device.leaveLease();
     }
 }
 ```

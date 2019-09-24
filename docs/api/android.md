@@ -54,7 +54,7 @@ dhap.discoverDevices(new DiscoverDevicesCallbacks() {
 
 **Line 17** shows the `discoveryFailure()` callback. This callback indicates that something went wrong in the library during the process of attempting to find devices.
 
-In addition to the normal discovery operation, the DHAP library also allows for debug devices to be discovered using the `discoverDebugDevices(DiscoverDevicesCallbacks)` method. This method will search for xml files in the assests folder rather then over the network. A device object will be created for each xml file found.
+In addition to the normal discovery operation, the DHAP library also allows for debug devices to be discovered using the `discoverDebugDevices(DiscoverDevicesCallbacks)` method. This method will search for xml files in the assets folder rather then over the network. A device object will be created for each xml file found.
 
 ``` java {1}
 dhap.discoverDebugDevices(new DiscoverDevicesCallbacks() {
@@ -85,10 +85,10 @@ dhap.discoverDebugDevices(new DiscoverDevicesCallbacks() {
 
 The Joining API contains methods that allow for you to proceed with the joining protocol at your own pace or to complete the entire protocol in one method.
 
-The `joinDevice(String networkSSID, String networkPassword, String deviceSSID, String devicePassword, JoinDeviceCallbacks callback)` will perform all of the joining protocol for you. This will first verify the network SSID and password by connecting to that network. Then it will connect to the IoT devices AP and send the crededntials. This method will wait for a verification from the IoT device that it has successfully joined the network before calling the `success` callback.
+The `joinDevice(String networkSSID, String networkPassword, String deviceSSID, String devicePassword, String name, String location, JoinDeviceCallbacks callback)` will perform all of the joining protocol for you. This will first verify the network SSID and password by connecting to that network. Then it will connect to the IoT devices AP and send the credentials and header information. This method will wait for a verification from the IoT device that it has successfully joined the network before calling the `success` callback.
 
 ``` java {3,8,13,18,24}
-dhap.joinDevice(networkSSID, networkPassword, deviceSSID, devicePassword, new JoinDeviceCallbacks() {
+dhap.joinDevice(networkSSID, networkPassword, deviceSSID, devicePassword, deviceName, deviceLocation, new JoinDeviceCallbacks() {
     @Override
     public void networkNotFound(String SSID) {
         Log.e(TAG, "Network not found: " + SSID);
@@ -121,7 +121,7 @@ dhap.joinDevice(networkSSID, networkPassword, deviceSSID, devicePassword, new Jo
 
 **Line 8** shows the `credentialsAcknowledged()` callback. This callback indicates that the device has responded that the credentials have been received.
 
-**Line 13** shows the `sendCredentialsTimeout()` callback. This callback indicates that an acknowledgement was not recived from the device. This most likely due to the device not reciving the credentials.
+**Line 13** shows the `sendCredentialsTimeout()` callback. This callback indicates that an acknowledgement was not received from the device. This most likely due to the device not receiving the credentials.
 
 **Line 18** shows the `success()` callback. This callback indicates that the device has successfully joined the network.
 
@@ -129,7 +129,7 @@ dhap.joinDevice(networkSSID, networkPassword, deviceSSID, devicePassword, new Jo
 
 ### Connect To Access Point
 
-The `connectToAccessPoint(String SSID, String password, ConnectToApCallbacks callback)` method will conect to the designated AP and call the relevent callback methods. Note: this method will call the `success` callback once it has verified that a connection has been establised and IP packets can now be sent. This has a 30 second timeout and will return `failure` if a connection is not established before the end of the timeout.
+The `connectToAccessPoint(String SSID, String password, ConnectToApCallbacks callback)` method will connect to the designated AP and call the relevant callback methods. Note: this method will call the `success` callback once it has verified that a connection has been established and IP packets can now be sent. This has a 30 second timeout and will return `failure` if a connection is not established before the end of the timeout.
 
 ``` java {3,8,13}
 dhap.connectToAccessPoint(SSID, password, new ConnectToApCallbacks() {
@@ -157,10 +157,10 @@ dhap.connectToAccessPoint(SSID, password, new ConnectToApCallbacks() {
 
 ### Send Credentials
 
-The `sendCredentials(String SSID, String password, SendCredentialsCallbacks callback)` method will broadcast the credentials on its current network. This method should only be called after a connection to the IoT device has been established. Note: This method will only call the `success` callback once it has recieved an acknowledgement from the IoT device that credentials where recieved. This method will continuously broadcast the credentials once every second until an acknowledgement is recieved. If not acknowldegement is recieved within 20 seconds, `sendCredentialsTimeout` will be called and the credential broadcasts will cease.
+The `sendCredentials(String SSID, String password, String name, String location, SendCredentialsCallbacks callback)` method will broadcast the credentials and header information on its current network. This method should only be called after a connection to the IoT device has been established. Note: This method will only call the `success` callback once it has received an acknowledgement from the IoT device that credentials where received. This method will continuously broadcast the credentials once every second until an acknowledgement is received. If not acknowledgement is received within 20 seconds, `sendCredentialsTimeout` will be called and the credential broadcasts will cease.
 
 ``` java {3,8,13,18}
-dhap.sendCredentials(SSID, password, new SendCredentialsCallbacks() {
+dhap.sendCredentials(SSID, password, name, location, new SendCredentialsCallbacks() {
     @Override
     public void credentialsAcknowledged() {
         Log.d(TAG, "networkNotFound");
@@ -182,9 +182,9 @@ dhap.sendCredentials(SSID, password, new SendCredentialsCallbacks() {
     }              
 });
 ```
-**Line 3** shows the `credentialsAcknowledged()` callback. This callback indicates that the credentials where sent successfully and an acknowledgement has been recieved from the device.
+**Line 3** shows the `credentialsAcknowledged()` callback. This callback indicates that the credentials where sent successfully and an acknowledgement has been received from the device.
 
-**Line 8** shows the `sendCredentialsTimeout()` callback. This callback indicates that no response was recieved when sending the credentials. 
+**Line 8** shows the `sendCredentialsTimeout()` callback. This callback indicates that no response was received when sending the credentials. 
 
 **Line 13** shows the `success()` callback. This callback indicates that the device has successfully joined the network.
 
@@ -221,54 +221,71 @@ dhap.fetchDeviceInterface(device, new FetchDeviceInterfaceCallbacks() {
 
 **Line 9** shows the `invalidDisplayXmlFailure()` callback. This callback indicates that the xml send from the device is invalid.
 
-**Line 14** shows the `displayTimeoutFailure()` callback. This callback indicates that the devices xml was not received before the timout ended.
+**Line 14** shows the `displayTimeoutFailure()` callback. This callback indicates that the devices xml was not received before the timeout ended.
 
 ## Status
 
-To request a status lease and recieve status updates, an instance of the `StatusUpdates` class must be created. This class will handle all funcitons relating to status updates and will therefore update relevent elements when a new status update is recieved.
+To request a status lease and receive status updates, an instance of the `Device` class must be used. This class will handle all functions relating to status updates and will therefore update relevant elements when a new status update is received.
 
-This class must be passed an instance of the `Device` class which represents the IoT device where the status updates will be broadcast from.
+This class contains several public methods in its API relating to status updates.
 
-``` java {2,10}
-private Device device;
-private StatusUpdates statusUpdates;
+`requestStatusLease(float leaseLength, float updatePeriod, boolean responseRequired,  StatusLeaseCallbacks callbacks)` is the main method that will be needed. This will request a status lease from the IoT device and begin listening for status updates. This function contains four parameters. `leaselength` is the requested duration of the lease in milliseconds. `updatePeriod` refers to how often the status updates should be broadcast by the IoT device. `responseRequired` indicates if the IoT device should respond with the lease length and update period that has been granted. 
 
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
+Their is two callbacks for this function. `leaseResponse(float leaseLength, float updatePeriod)` will be called only when a response is received from the IoT device and will contain the lease length and update period that was granted. `shouldRenewStatusLease()` will be called when a lease expires, this function should return a boolean that determines if the lease will be requested again or not.
 
-    device = getIntent().getParcelableExtra("device");
+One would typically call this function in the `onCreate()` or `onResume()` method of an activity .
 
-    statusUpdates = new StatusUpdates(device);
-
-    statusUpdates.requestStatusLease(10000, 1000, false);
-}
-```
-
-This class contains several public methods in its API.
-
-`sendLeaseRequest(float leaseLength, float updatePeriod, boolean responseRequired)` is the main method that will be needed. This will request a status lease form the IoT device and begin listening for status updates. This function contains three parameters. `leaselength` is the requested duration of the lease in milliseconds. `updatePeriod` refers to how often the status updates should be broadcast by the IoT device. `responseRequired` indicates if the IoT device should respond with the lease length and update period that has been granted. 
-
- One would typically call this function in the `onCreate()` or `onResume()` method of an activity .
-
-``` java {6}
-private StatusUpdates statusUpdates;
-
+``` java {4}
 @Override
 protected void onResume() {
     super.onResume();
-    statusUpdates.requestStatusLease(10000, 1000, false);
+    device.requestStatusLease(10000, 1000, false, new StatusLeaseCallbacks() {
+        @Override
+        public void leaseResponse(float leaseLength, float updatePeriod) {
+            Log.d("DeviceActivity", "leaseResponse: " + leaseLength + " UpdatePeriod: " + updatePeriod);
+        }
+
+        @Override
+        public boolean shouldRenewStatusLease() {
+            return true;
+        }
+    });
 }
 ```
 
-Conversly, you can also call `leaveLease()` which will indicate to the IoT device that you are no longer interested in status updates.
+Conversely, you can also call `leaveLease()` which will indicate to the IoT device that you are no longer interested in status updates.
 
-``` java {6}
-private StatusUpdates statusUpdates;
-
+``` java {4}
 @Override
 protected void onStop() {
     super.onStop();
-    statusUpdates.leaveLease();
+    device.leaveLease();
 }
+```
+
+## Device 
+
+The device class contains several other functions which can be used to control or change the state of an IoT device.
+
+The name and location of a device represent the device header. These values can be changed for a specific device through the use of the `Device` class.
+
+To change the name of a device use the `changeDeviceName(String name)` function
+
+``` java {2}
+Device device;
+device.changeDeviceName("Name here");
+```
+
+To change the location of a device use the `changeDeviceLocation(String location)` function
+
+``` java {2}
+Device device;
+device.changeDeviceLocation("Location here");
+```
+
+To send an IoT command to a device, use the `sendIoTCommand(String tag, String data)` function. `tag` represents the tag of the UI element that was interacted with while `data` is the new state of the elements.
+
+``` java {2}
+Device device;
+device.sendIoTCommand("1-1", "3");
 ```
