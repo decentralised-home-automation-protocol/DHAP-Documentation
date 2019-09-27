@@ -50,3 +50,64 @@ Don't forget to sync your project after modifying gradle files.
 :::
 
 ## iOS
+
+### Requirements
+
+- iOS 12+
+- XCode 10+
+- [Cocoapods](https://guides.cocoapods.org/using/getting-started.html) is installed.
+
+### Cocoapods
+
+
+**Step 1**: Initialise the project with cocoapods.
+
+``` bash
+$ pod init
+```
+
+**Step 2**: Specify platform and version for project in `Podfile`.
+
+``` {2}
+# Uncomment the next line to define a global platform for your project
+platform :ios, '12.0'
+
+target 'DHAPLibTest' do
+  # Comment the next line if you don't want to use dynamic frameworks
+  use_frameworks!
+
+  # Pods for DHAPLibTest
+
+end
+```
+
+**Step 3**: Add the DHAP library as a dependency in `Podfile`.
+
+``` {9}
+# Uncomment the next line to define a global platform for your project
+platform :ios, '12.0'
+
+target 'DHAPLibTest' do
+  # Comment the next line if you don't want to use dynamic frameworks
+  use_frameworks!
+
+  # Pods for DHAPLibTest
+  pod 'DHAP', '~> 0.3'
+end
+```
+
+**Step 4**: Install the dependency.
+
+``` bash
+$ pod install
+```
+
+**Step 5**: Open the workspace.
+
+``` bash
+open DHAPLibTest.xcworkspace
+```
+
+::: tip
+Make sure to open the workspace and not the project from this point on.
+:::
