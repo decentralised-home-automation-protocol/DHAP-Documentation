@@ -2,6 +2,10 @@
 
 ## Android
 
+This installation guide is aimed at developers who have experience with Android development and its build tools. An installation guide for new developers can be found [here](https://decentralised-home-automation-protocol.github.io/DHAP-Documentation/guide/android.html#library-installation).
+
+A completed example application can be found in the [Android Repo](https://github.com/decentralised-home-automation-protocol/DHAP-Android) which has the ability to Join, Discover and Control compliant IoT devices. Simply clone the android repo and open it in [Android Studio](https://developer.android.com/studio). From here you can compile and run the example application on your Android device.
+
 ### Requirements
 
 - Android API 17+
