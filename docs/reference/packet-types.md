@@ -139,10 +139,11 @@ Sent from `Device`
 Device responds to a discovery header request with the devices xml header.
 
 ```
-330|mac,name,location
+330|mac,version,name,location
 ```
 
 - **mac**: device MAC address
+- **version**: the rolling version number of this header
 - **name**: the name given to the device
 - **location**: the location given to the device
 
@@ -319,3 +320,31 @@ An example status update packet for this device layout could look like the follo
 `530|B4:E6:2D:67:B5:3D,F,13,True,4`
 
 In this update packet, the progress bar is at `13%`, the stepper has a value of `4` and the buttontoggle is in a `True` state. Note, the elements do not need to be listed in order of status update index in the xml.
+
+## Device Header
+
+### Change Device Name
+Sent from `ICD`
+
+ICD informs the device that it should change the name value in its header.
+```
+600|name
+```
+- **name**: new name for the device
+
+This will cause the IoT Device to increment its rolling header version.
+
+Example: `600|TV`
+
+### Change Device Location
+Sent from `ICD`
+
+ICD informs the device that it should change the location value in its header.
+```
+610|location
+```
+- **location**: new location for the device
+
+This will cause the IoT Device to increment its rolling header version.
+
+Example: `610|Bedroom`
