@@ -79,6 +79,56 @@ dhap.discoverDebugDevices(new DiscoverDevicesCallbacks() {
 });
 ```
 
+### Census List
+
+When discovery is performed, the list of devices, known as the census list, will be saved to local storage on the Android device. This list can be retrieved by calling the `getSavedDevices()` function. This function will return an `ArrayList` of `Device` objects representing each device that was saved to local storage.
+
+``` java {12}
+dhap.discoverDebugDevices(new DiscoverDevicesCallbacks() {
+    private ArrayList<Device> censusList;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        dhap = new DHAP(this);
+
+        censusList = new ArrayList<>();
+        censusList.addAll(dhap.getSavedDevices());
+    }
+});
+```
+
+The census list saved to local storage can also be cleared completely by calling the `clearSavedDevices()` function.
+
+``` java {1}
+dhap.clearSavedDevices();
+```
+
+Or you can remove a specific device from the census list by calling  `removeDevice()`. This will remove any device from local storage with the same mac address. All other devices in local storage will remain.
+
+``` java {4}
+ArrayList<Device> censusList = new ArrayList<>();
+censusList.addAll(dhap.getSavedDevices());
+Device device = censusList.get(0);
+dhap.removeDevice(device);
+```
+
+### Refresh Census List
+You can also refresh any list of devices by calling the `refreshCensusList(List<Device> devices, RefreshCensuslistCallbacks callbacks)` function. This function accepts any list of devices as a parameter and will individually check each devices status and header. This function is useful to check if devices are still active after a long period of time or to check if the devices received from local storage are still active. This function will also ensure the headers of each device are up to date. This function requires an instance of `RefreshCensuslistCallbacks` as a parameter. There is only one callback for this function that indicates the refreshing operation has concluded.
+
+``` java {1,3}
+private ArrayList<Device> censusList;
+
+dhap.refreshCensusList(censusList, new RefreshCensuslistCallbacks() {
+    @Override
+    public void censusListRefreshed() {
+        //The device objects in censusList ArrayList have now been updated.
+    }
+});
+```
+
 ## Joining
 
 ### Join Device
