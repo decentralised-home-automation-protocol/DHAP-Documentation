@@ -5,9 +5,6 @@
 ``` xml
 <?xml version="1.0" encoding="UTF-8"?>
 <device>
-    <name>Kettle</name>
-    <location>Kitchen</location>
-
     <group id="1">
         <gui_element id="1">
             <type>switchtoggle</type>
@@ -59,9 +56,6 @@
 ``` xml
 <?xml version="1.0" encoding="UTF-8"?>
 <device>
-    <name>Security Camera</name>
-    <location>Outside</location>
-
     <group id="1">
         <gui_element id="1">
             <type>switchtoggle</type>
@@ -110,9 +104,6 @@
 ``` xml
 <?xml version="1.0" encoding="UTF-8"?>
 <device>
-    <name>TV</name>
-    <location>Living Room</location>
-
     <group id="1">
         <gui_element id="1">
             <type>switchtoggle</type>
@@ -204,9 +195,6 @@
 ``` xml
 <?xml version="1.0" encoding="UTF-8"?>
 <device>
-    <name>Thermostat</name>
-    <location>Living Room</location>
-
     <group id="1">
         <gui_element id="1">
             <type>status</type>
