@@ -2,9 +2,9 @@
 
 The xml schema developed for DHAP has several different tags. These tags do not need to be placed in any particular order in an xml file. However, some of the tags must be placed within another tag as a child or subchild.
 
-The general structure for any xml schema can be seen below.
+The general structure for any XML schema can be seen below.
 
-```xml
+``` xml
 <root>
   <child>
     <subchild>.....</subchild>
@@ -12,13 +12,20 @@ The general structure for any xml schema can be seen below.
 </root>
 ```
 
-Full examples of device layout xml can be found in the (Device Examples)[https://decentralised-home-automation-protocol.github.io/DHAP-Documentation/reference/device-examples.html] reference page.
+Full examples of device layout XML can be found in the (Device Examples)[https://decentralised-home-automation-protocol.github.io/DHAP-Documentation/reference/device-examples.html] reference page.
+
+The first thing that should be included in the device XML file is an XML prolog as seen below. This prolog outlines the XML version and the character encoding used.
+
+``` xml
+<?xml version="1.0" encoding="UTF-8"?>
+```
 
 ## device
 
 The device tag is the root tag. All other tags must be placed within this tag.
 
-```xml {1,3}
+```xml {2,4}
+<?xml version="1.0" encoding="UTF-8"?>
 <device>
   ...
 </device>
@@ -34,7 +41,8 @@ As an option, the `group` tag can also have a `frame` attribute which will draw 
 
 There is no limit to the number of groups you can have in a `device`.
 
-```xml {2,4}
+```xml {3,5}
+<?xml version="1.0" encoding="UTF-8"?>
 <device>
   <group id="1" frame="false" orientation="vertical">
   ...
@@ -50,7 +58,8 @@ A `gui_element` tag must have an attribute `id`. This is a unique identifier for
 
 There can be multiple `gui_element` tags in a `group`.
 
-```xml {3,5}
+```xml {4,6}
+<?xml version="1.0" encoding="UTF-8"?>
 <device>
   <group id="1">
     <gui_element id="1">
@@ -66,7 +75,8 @@ The `type` tag is the main descriptor of a GUI element. The contents of this tag
 
 There should only be 1 `type` tag in a `gui_element`.
 
-```xml {4}
+```xml {5}
+<?xml version="1.0" encoding="UTF-8"?>
 <device>
   <group id="1">
     <gui_element id="1">
@@ -78,11 +88,12 @@ There should only be 1 `type` tag in a `gui_element`.
 
 ## disp_settings
 
-The `disp_settings` tag describes the element specific settings of this GUI component. The value in this tag will contain a list of comma seperated values that are unique to each element. The meaning of these values can be seen in the relevant section of the [Elements reference](https://decentralised-home-automation-protocol.github.io/DHAP-Documentation/reference/elements.html) page for any specific element.
+The `disp_settings` tag describes the element specific settings of this GUI component. The value in this tag will contain a list of comma separated values that are unique to each element. The meaning of these values can be seen in the relevant section of the [Elements reference](https://decentralised-home-automation-protocol.github.io/DHAP-Documentation/reference/elements.html) page for any specific element.
 
 There should only be 1 `disp_settings` tag in a `gui_element`.
 
-```xml {5}
+```xml {6}
+<?xml version="1.0" encoding="UTF-8"?>
 <device>
   <group id="1">
     <gui_element id="1">
@@ -101,9 +112,10 @@ The value in this tag must be unique to all `gui_element` tags. i.e no two eleme
 
 There should only be 1 `status_location` tag in a `gui_element`.
 
-The index values for the status location begin at `1`. Therefore the first `status_location` value must be `1`, the second `2`, third `3` and so on. The `gui_elements` do not need to be listed in the xml in order of status location. However, the values in the `status_location` must not skip any values. For example, if there is a total of 8 `gui_elements` in a device description. The `status_location` values must range from `1` to `8` with no duplicate values.
+The index values for the status location begin at `1`. Therefore the first `status_location` value must be `1`, the second `2`, third `3` and so on. The `gui_elements` do not need to be listed in the XML in order of status location. However, the values in the `status_location` must not skip any values. For example, if there is a total of 8 `gui_elements` in a device description. The `status_location` values must range from `1` to `8` with no duplicate values.
 
-```xml {6}
+```xml {7}
+<?xml version="1.0" encoding="UTF-8"?>
 <device>
   <group id="1">
     <gui_element id="1">
@@ -121,7 +133,8 @@ The `comment` tag contains a short description of this GUI element.
 
 There should only be 1 `comment` tag in a `gui_element`.
 
-```xml {7}
+```xml {8}
+<?xml version="1.0" encoding="UTF-8"?>
 <device>
   <group id="1">
     <gui_element id="1">
