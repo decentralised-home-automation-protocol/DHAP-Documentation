@@ -12,7 +12,7 @@ The general structure for any XML schema can be seen below.
 </root>
 ```
 
-Full examples of device layout XML can be found in the (Device Examples)[https://decentralised-home-automation-protocol.github.io/DHAP-Documentation/reference/device-examples.html] reference page.
+Full examples of device layout XML can be found in the [Device Examples](https://decentralised-home-automation-protocol.github.io/DHAP-Documentation/reference/device-examples.html) reference page.
 
 The first thing that should be included in the device XML file is an XML prolog as seen below. This prolog outlines the XML version and the character encoding used.
 
