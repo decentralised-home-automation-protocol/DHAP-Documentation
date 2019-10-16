@@ -80,7 +80,7 @@ Sent from `ICD`
 ICD requests that the device checks if it is on the census list.
 
 ```
-300|[device,device,device...]
+300|[device-device-device...]
 ```
 
 - **device**: the string representation of a currently discovered device
