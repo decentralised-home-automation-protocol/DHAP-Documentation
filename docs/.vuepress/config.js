@@ -30,7 +30,6 @@ module.exports = {
         collapsable: false,
         children: [
           '/api/',
-          '/api/android',
           '/api/ios'
         ]
       },
